@@ -132,8 +132,11 @@ namespace ContosoUniversity.Controllers
         {
             try
             {
-                Student student = db.Students.Find(id);
-                db.Students.Remove(student);
+                //Student student = db.Students.Find(id);
+                //db.Students.Remove(student);
+                // Better performance below:
+                Student studentToDelete = new Student{ StudentId = id};
+                db.Entry(studentToDelete).State = EntityState.Deleted;
                 db.SaveChanges();
             }
             catch (DataException /*dex*/)
