@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using ContosoUniversity.Models;
 using ContosoUniversity.DAL;
+using PagedList;
 
 namespace ContosoUniversity.Controllers
 {
@@ -18,10 +19,23 @@ namespace ContosoUniversity.Controllers
         //
         // GET: /Student/
 
-        public ActionResult Index(string sortOrder, string searchString)
+        public ViewResult Index(string sortOrder, string currentFilter, string searchString, int? page)
         {
+            ViewBag.CurrentSort = sortOrder;
             ViewBag.NameSortParm = String.IsNullOrEmpty(sortOrder) ? "Name_desc" : "";
             ViewBag.DateSortParm = sortOrder == "Date" ? "Date_desc" : "Date";
+
+            if (searchString != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                searchString = currentFilter;
+            }
+
+            ViewBag.CurrentFilter = searchString;
+
             var students = from s in db.Students select s;
 
             if (!String.IsNullOrEmpty(searchString))
@@ -41,12 +55,15 @@ namespace ContosoUniversity.Controllers
                 case "Date_desc":
                     students = students.OrderByDescending(s => s.EnrollmentDate);
                     break;
-                default:
+                default: // Name ascending
                     students = students.OrderBy(s => s.LastName);
                     break;
             }
+
+            int pageSize = 3;
+            int pageNumber = (page ?? 1);
             
-            return View(students.ToList());
+            return View(students.ToPagedList(pageNumber, pageSize));
         }
 
         //
