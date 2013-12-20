@@ -127,6 +127,7 @@ namespace ContosoUniversity.Controllers
         //
         // POST: /Student/Delete/5
 
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
         {
